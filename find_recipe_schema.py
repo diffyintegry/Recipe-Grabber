@@ -20,11 +20,6 @@ def find_recipe(soup, recipes=[]):
 
 
 
-def get_all_urls():
-    ''' crawl for urls
-    '''
-    pass
-
 
 
 def main():
