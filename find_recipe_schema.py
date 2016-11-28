@@ -12,7 +12,7 @@ _times = [
          ]
 
 
-def find_recipe(soup, recipes=[]):
+def find_recipe(soup, url, recipes=[]):
     ''' look for recipes in the given html
     '''
     recipeDict = {}
@@ -20,6 +20,7 @@ def find_recipe(soup, recipes=[]):
         try:
             recipeData = json.loads(item.contents[0])
             assert recipeData['@type'] == 'Recipe'
+            recipeDict = recipeData
             break
         except:
             pass
@@ -28,9 +29,12 @@ def find_recipe(soup, recipes=[]):
             try:
                 itemprop = item['itemprop']
                 if itemprop in _times:
-                    recipeDict[itemprop] = item.contents[0]
+                    recipeDict[itemprop] = item.string
             except:
                 pass
+        for item in soup.findAll('div', {'class':'ERSNotes'}):
+            recipeDict['notes'] = str(item.contents[0])
+        recipeDict['source_url'] = url
         recipes.append(recipeDict)
     return recipes
 

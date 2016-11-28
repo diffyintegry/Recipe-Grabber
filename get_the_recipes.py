@@ -15,7 +15,8 @@ def get_all_urls(soup):
             print '%s %s' % (aTag['href'], aTag['title'])
             
             time.sleep(1)
-            find_recipe(BeautifulSoup(req.get(aTag['href']).text),recipes)
+            find_recipe(BeautifulSoup(req.get(aTag['href']).text), aTag['href'], recipes)
+            
             break
     return recipes
 
