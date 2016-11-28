@@ -2,6 +2,10 @@
 import json
 import sys
 from collections import defaultdict
+from unidecode import unidecode
+from HTMLParser import HTMLParser
+
+h = HTMLParser()
 
 _schema_keys_to_yml = {
                 'description' : 'notes',
@@ -33,6 +37,11 @@ _yml_keys = [
             'source',
             'notes',
             ]
+def remove_non_ascii(input):
+    ''' borrowed from http://stackoverflow.com/a/35492167
+    '''
+    return unidecode(unicode(input, encoding = "utf-8"))
+
 
 
 def load_json(filename):
@@ -123,11 +132,17 @@ def yml_prep_to_yml(list_of_yml_dicts):
         for key in _yml_keys:
             if not item[key]:
                 continue
+	    line = item[key].replace('<br>','\n').replace('<br/>','\n').replace('\n','\r\n    ')
+	    line = line.replace('<span class="fn">','').replace('</span>','')
+	    line = line.replace('<span class ="fn">','').replace('<span class = "fn">','').replace('<span class= "fn">','')
+	    line = h.unescape(line)
+	    line = remove_non_ascii(line.encode('UTF-8'))
+	    line = line.replace('\n','')
             strList.append(key)
             strList.append(': ')
             if key in ('ingredients', 'directions','notes'):
                 strList.append('|\r\n    ')
-            strList.append(item[key].replace('<br>','\n').replace('<br/>','\n').replace('\n','\r\n    '))
+            strList.append(line)
             strList.append('\r\n  ')
         del(strList[-1])
         strList.append('\r\n')
